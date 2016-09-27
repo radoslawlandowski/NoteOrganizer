@@ -1,6 +1,6 @@
 
 node {
     stage 'FirstFromJenkins'
-    sh 'gradle build --info'
+    sh 'gradle build'
 }
 
