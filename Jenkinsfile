@@ -1,2 +1,6 @@
-stage "FirstFromJenkins"
-'gradle build --info'
+
+node {
+    stage 'FirstFromJenkins'
+    sh 'gradle build --info'
+}
+
