@@ -1,2 +1,2 @@
 stage "FirstFromJenkins"
-echo "Hello from jenkins"
+'gradle build --info'
