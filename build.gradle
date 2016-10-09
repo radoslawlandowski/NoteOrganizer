@@ -36,7 +36,22 @@ dependencies {
     // 'test.useTestNG()' to your build script.
     testCompile 'junit:junit:4.12'
 
+    compile(
+            group: 'io.dropwizard', name: 'dropwizard-hibernate', version: dropwizardVersion
+    )
+
     compile group: 'io.dropwizard', name: 'dropwizard-core', version: dropwizardVersion
+    compile group: 'io.dropwizard', name: 'dropwizard-auth', version: dropwizardVersion
+
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.7'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
+
+    compile group: 'com.hubspot.dropwizard', name: 'dropwizard-guice', version: '1.0.0.2'
+
+    compile group: 'org.postgresql', name: 'postgresql', version: '9.4.1211'
+
+
+
 
 }
 
