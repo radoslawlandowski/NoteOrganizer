@@ -1,7 +1,6 @@
 package resources;
 
 import DAO.TabDAO;
-import com.google.inject.Inject;
 import domain.Owner;
 import domain.Tab;
 import io.dropwizard.auth.Auth;
@@ -21,6 +20,10 @@ public class TabResource {
 
     private TabDAO dao;
 
+    public TabResource(TabDAO dao) {
+        this.dao = dao;
+    }
+
     @Path("/create")
     @PUT
     @UnitOfWork
@@ -36,11 +39,6 @@ public class TabResource {
             r = Response.status(Response.Status.CONFLICT).entity(tab).build();
         }
         return r;
-    }
-
-    @Inject
-    public TabResource(TabDAO dao) {
-        this.dao = dao;
     }
 
     @Path("/all")

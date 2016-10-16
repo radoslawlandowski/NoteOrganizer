@@ -13,7 +13,6 @@ import java.util.List;
  */
 public class TabDAO extends AbstractDAO<Tab> {
 
-    @Inject
     public TabDAO(SessionFactory factory) {
         super(factory);
     }

@@ -7,54 +7,76 @@
  * user guide available at https://docs.gradle.org/2.14/userguide/tutorial_java_projects.html
  */
 
-// Apply the java plugin to add support for Java
-apply plugin: 'java'
-apply plugin: 'application'
+import org.yaml.snakeyaml.Yaml
 
-sourceCompatibility = 1.8
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.postgresql:postgresql:9.4.1211'
+        classpath 'org.yaml:snakeyaml:1.12'
+    }
+}
 
-project.ext {
-    dropwizardVersion = '1.0.2'
-    configPath = "$rootProject.projectDir/configs/"
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.liquibase.gradle' version '1.2.1'
 }
 
 mainClassName = "NoteOrganizerApplication"
 
-// In this section you declare where to find the dependencies of your project
-        repositories {
-            // Use 'jcenter' for resolving your dependencies.
-            // You can declare any Maven/Ivy/file repository here.
-            jcenter()
-            mavenCentral()
-        }
 
-// In this section you declare the dependencies for your production and test code
+project.ext {
+    dropwizardVersion = '1.0.2'
+    configPath = "$rootProject.projectDir/configs/"
+    mainConfigName = "mainConfig.yml"
+    sourceCompatibility = 1.8
+    databaseUrl = ""
+    databaseUsername = ""
+    databasePassword = ""
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
 dependencies {
-    // Declare the dependency for your favourite test framework you want to use in your tests.
-    // TestNG is also supported by the Gradle Test task. Just change the
-    // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
-    // 'test.useTestNG()' to your build script.
     testCompile 'junit:junit:4.12'
 
-    compile(
-            group: 'io.dropwizard', name: 'dropwizard-hibernate', version: dropwizardVersion
-    )
-
+    compile group: 'io.dropwizard', name: 'dropwizard-hibernate', version: dropwizardVersion
     compile group: 'io.dropwizard', name: 'dropwizard-core', version: dropwizardVersion
     compile group: 'io.dropwizard', name: 'dropwizard-auth', version: dropwizardVersion
-
+    compile group: 'io.dropwizard', name: 'dropwizard-testing', version: dropwizardVersion
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.7'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
-
-    compile group: 'com.hubspot.dropwizard', name: 'dropwizard-guice', version: '1.0.0.2'
-
-    compile group: 'org.postgresql', name: 'postgresql', version: '9.4.1211'
-
-
-
+    compile group: 'org.postgresql', name: 'postgresql', version: '9.4.1211.jre7'
+    compile group: 'org.liquibase', name: 'liquibase-core', version: '3.5.3'
 
 }
 
 run {
-    args 'server', configPath + 'mainConfig.yml'
+    args 'server', configPath + mainConfigName
+}
+
+build.doFirst() {
+    Yaml yaml = new Yaml()
+    def doc = new File(configPath + mainConfigName).text
+    def map = (Map) yaml.load(doc)
+    project.ext.set("databaseUrl", map["database"]["url"])
+    project.ext.set("databaseUsername", map["database"]["user"])
+    project.ext.set("databasePassword", map["database"]["password"])
+}
+
+liquibase {
+    activities {
+        main {
+            changeLogFile "$rootProject.projectDir/src/main/resources/migrations.xml"
+            url 'jdbc:postgresql://localhost:5432/NoteOrganizer'
+            username 'postgres'
+            password 'postgres'
+        }
+    }
 }

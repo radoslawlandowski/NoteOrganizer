@@ -1,7 +1,6 @@
 package resources;
 
 import DAO.NoteDAO;
-import com.google.inject.Inject;
 import domain.Note;
 import domain.Owner;
 import io.dropwizard.auth.Auth;
@@ -15,13 +14,12 @@ import javax.ws.rs.core.Response;
  * Created by radoslawl on 26/07/16.
  */
 
-@Path("/notes")
+@Path("notes")
 @Produces(MediaType.APPLICATION_JSON)
 public class NoteResource {
 
     private NoteDAO dao;
 
-    @Inject
     public NoteResource(NoteDAO dao) {
         this.dao = dao;
     }

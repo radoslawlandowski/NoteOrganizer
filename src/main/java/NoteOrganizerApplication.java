@@ -5,7 +5,6 @@
 import DAO.NoteDAO;
 import DAO.TabDAO;
 import auth.NoteOrganizerAuthenticator;
-import com.hubspot.dropwizard.guice.GuiceBundle;
 import configuration.NoteOrganizerConfiguration;
 import domain.Note;
 import domain.Owner;
@@ -35,8 +34,6 @@ public class NoteOrganizerApplication extends Application<NoteOrganizerConfigura
         }
     };
 
-    private GuiceBundle<NoteOrganizerConfiguration> guiceBundle;
-
     public static void main(final String[] args) throws Exception {
         new NoteOrganizerApplication().run(args);
     }
@@ -44,21 +41,11 @@ public class NoteOrganizerApplication extends Application<NoteOrganizerConfigura
     @Override
     public void initialize(Bootstrap<NoteOrganizerConfiguration> bootstrap) {
         bootstrap.addBundle(hibernate);
-
-        guiceBundle = GuiceBundle.<NoteOrganizerConfiguration>newBuilder()
-                .addModule(new NoteOrganizerModule())
-                .setConfigClass(NoteOrganizerConfiguration.class)
-                .build();
-        bootstrap.addBundle(guiceBundle);
     }
 
     @Override
     public void run(final NoteOrganizerConfiguration configuration, final Environment environment) throws Exception {
         LOGGER.info("Application name: " + configuration.getAppName());
-
-        environment.jersey().register(guiceBundle.getInjector().getInstance(NoteDAO.class));
-        environment.jersey().register(guiceBundle.getInjector().getInstance(TabDAO.class));
-
 
         final NoteDAO noteDao = new NoteDAO(hibernate.getSessionFactory());
         final TabDAO tabDao = new TabDAO(hibernate.getSessionFactory());
@@ -67,12 +54,13 @@ public class NoteOrganizerApplication extends Application<NoteOrganizerConfigura
         environment.jersey().register(new TabResource(tabDao));
 
         environment.jersey().register(new AuthDynamicFeature(
-                new BasicCredentialAuthFilter.Builder<Owner>()
-                        .setAuthenticator(new NoteOrganizerAuthenticator())
-                        .setRealm("SUPER SECRET STUFF")
-                        .buildAuthFilter()));
-        environment.jersey().register(RolesAllowedDynamicFeature.class);
-        //If you want to use @Auth to inject a custom Principal type into your resource
-        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(Owner.class));
+           new BasicCredentialAuthFilter.Builder<Owner>()
+               .setAuthenticator(new NoteOrganizerAuthenticator())
+               .setRealm("SUPER SECRET STUFF")
+               .buildAuthFilter()));
+       environment.jersey().register(RolesAllowedDynamicFeature.class);
+       //If you want to use @Auth to inject a custom Principal type into your resource
+       environment.jersey().register(new AuthValueFactoryProvider.Binder<>(Owner.class));
+
     }
 }

@@ -13,7 +13,6 @@ import java.util.List;
  */
 public class NoteDAO extends AbstractDAO<Note> {
 
-    @Inject
     public NoteDAO(SessionFactory factory) {
         super(factory);
     }
