@@ -1,0 +1,9 @@
+
+node {
+    stage 'FirstFromJenkins'
+    sh 'gradle build'
+
+	stage 'Just kiddin'
+	sh 'gradle run'
+}
+
