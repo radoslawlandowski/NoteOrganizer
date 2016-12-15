@@ -29,7 +29,7 @@ mainClassName = "NoteOrganizerApplication"
 
 
 project.ext {
-    dropwizardVersion = '1.0.2'
+    dropwizardVersion = '1.0.5'
     configPath = "$rootProject.projectDir/configs/"
     mainConfigName = "mainConfig.yml"
     sourceCompatibility = 1.8
